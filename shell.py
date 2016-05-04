@@ -20,6 +20,10 @@ objects = []
 
 libc = ctypes.CDLL(None)
 
+class CompileErr(BaseException):
+    def __str__(self):
+        return ""
+
 class ShellPlusPlus:
     reComment = re.compile(r'/\*.*?\*/|//.*?$', re.MULTILINE|re.DOTALL)
     # ograniceni smo da magic mora da se zavrsi sa \n a pre je dozvoljeno samo blanko
@@ -27,13 +31,16 @@ class ShellPlusPlus:
     reCellMagic = re.compile(r'^\s*(%%[a-zA-Z_][a-zA-Z_0-9]*.*)')
 
     def  __init__(self):
-        self.compile_flags = set() 
-        self.include_paths = set()
-        self.lib_paths = set()
+
+        # opcije za kompajliranje i linkovanje
+        self.compile_flags = [ "-std=c++11", "-Wall" ]
+        self.include_paths = []
+        self.lib_paths = []
         self.libs = []
         self.compiler = "g++"
 
-        self.run_path = tempfile.mkdtemp("_c++jezgro")
+        # gde ce biti smesteni tmp fajlovi za kompilaciju
+        self.tmp_path = tempfile.mkdtemp("_c++jezgro")
         self.i = 0
 
         self.decl = sharedObject();
@@ -51,6 +58,11 @@ class ShellPlusPlus:
         os.dup2(w, 2)
         self.err = os.fdopen(r)
 
+        r, w = os.pipe()
+        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        os.dup2(r, 0)
+        os.write(w, b'aa')
+
 
     def insert_declarations(self, code):
         result = []
@@ -62,7 +74,15 @@ class ShellPlusPlus:
         result.append( self.tmp_decl.get('functions') )
         result.append(code)
         if len(self.eval_lines) > 0:
-            result.append("void __run__(void) { %s }" %
+            result.append("""
+void __run__(void) { 
+try{ %s }
+catch (std::exception& e)
+{
+    std::cout << "Exception catched : " << e.what() << std::endl;
+}
+}
+                    """ %
                            '\n'.join(self.eval_lines))
         return '\n'.join(result)
 
@@ -79,54 +99,64 @@ class ShellPlusPlus:
         return code
 
 
-    def compile_then_load(self, code):
-        #compile
+
+    def compile(self, code):
+        ''' Kompajliramo kod i proizvodimo .cpp i .so'''
         self.i += 1
-        c_path = self.run_path+"/%i.cpp"%self.i
-        l_path = self.run_path+"/%i.so"%self.i
-        with open(c_path, 'w') as f: 
+
+        compile_path = self.tmp_path + "/%i.cpp" % self.i
+        result_path  = self.tmp_path + "/%i.so"  % self.i
+
+        with open(compile_path, 'w') as f: 
             f.writelines(code)
-        compile_command = [self.compiler, "-std=c++11", "-shared", "-Wall", "-fpic", 
-                           c_path, "-o", l_path]
-        status = subprocess.call(compile_command)
-        if status != 0:
-            # return ["error", subprocess.CalledProcessError()]
-            return ['error', "ERROR!!\n" ]
+
+        compile_command = [self.compiler, "-fpic", "-shared"]
+        compile_command += self.compile_flags 
+        compile_command += self.include_paths 
+        compile_command += self.lib_paths
+        compile_command += [ compile_path, "-o", result_path]
+        compile_command += self.libs
 
 
-        # load
-        o = ctypes.CDLL(l_path, RTLD_GLOBAL|RTLD_DEEPBIND|RTLD_NOW)
-        # objects.append(o)
-        return ["ok", o]
+        if subprocess.call(compile_command):
+            #error ( vraca razlicito od nula kad je greska)
+            raise CompileErr
 
+        return result_path
+
+    def load(self, so_file):
+        so_handle = ctypes.CDLL(so_file, RTLD_GLOBAL|RTLD_DEEPBIND|RTLD_NOW)
+        return so_handle
 
     def execute_code(self, code):
-        if code == None or len(code.strip()) == 0:
-            return ""
-        code = self.prepare(code)
-        # print(code)
-        # print('========')
+        '''Izvrsavamo kod(prepare,compile,load,execute)'''
 
-        status = self.compile_then_load(code)
-        if status[0] == 'error':
+        status = ["ok", '']
+
+        if code == None or len(code.strip()) == 0:
             return status
 
-        o = status[1]
-
-        result = ''
         try:
-            o[b'_Z7__run__v']()
-            result = self.out.read()
-        # except AttributeError:
-        except:
-            pass
+            code = self.prepare(code)
+            so_file = self.compile(code)
+            so_handle = self.load(so_file)
+            so_handle[b'_Z7__run__v']() # pozivamo funkciju void __run__(void)
+            status[1] = self.out.read()
 
-        return ["ok", result]
+        except CompileErr:
+            status = ['Compile Error', str(self.err.read())]
+
+        except OSError:
+            status = ['Link Error', 'link greska']
+
+        except AttributeError:
+            pass # funkcija run ne postoji
+        
+        return status
 
     def execute_cell(self, code):
-        self.eval_lines = []
-        #prvo uklanjamo komentare
-        code = re.sub(self.reComment, "", code)
+        self.eval_lines = []   # Ovde cuvamo linije sa %r 
+        code = re.sub(self.reComment, "", code) #uklanjamo komentare
 
         status = []
         #pokusavamo da uparimo cell magic
@@ -135,7 +165,7 @@ class ShellPlusPlus:
             magic = m.group(1)
             status = self.execute_cell_magic(magic, code[m.end():])
         else:
-            code = self.inject_magic(code)
+            code = self.inject_magic(code) # mozda ima line magic 
             status = self.execute_code(code)
 
         if status[0] == 'ok':
@@ -168,37 +198,25 @@ class ShellPlusPlus:
         return magic_code
 
 
-# t0 = """
-# %%hello -s -c -d -f
-# #include <iostream>
-# using namespace std;
-#
-# float a = 3;
-#
-# """
+t0 = """
+#include <iostream>
+using namespace std;
+
+int a = ;
+%r cout << a << endl;
+
+"""
 #
 # t0_1 = """
-# %%hello -s -c -d -f
 #
-# using std::string;
+# int print(){
+#   cout << "hello world " << a << endl;
+#   return 4;
+# }
 #
-#   #define AA 3.14
-#
-#
-#   float a = 100;
-#
-#     int print(){
-#       cout << "hello world " << a << endl;
-#       return 4;
-#     }
-#
-#     void __run__(void){
-#         print();
-#
-#     }
-#
+# %r    print();
 # """
-#
+
 # t1 = """
 # %%hello -s -c -d -f
 #
@@ -242,9 +260,9 @@ class ShellPlusPlus:
 # shell = ShellPlusPlus()
 # try:
 #     shell.execute_cell(t0)
-#     shell.execute_cell(t0_1)
-#     shell.execute_cell(t1)
-#     shell.execute_cell(t2)
-#     shell.execute_cell(t3)
+#     # shell.execute_cell(t0_1)
+#     # shell.execute_cell(t1)
+#     # shell.execute_cell(t2)
+#     # shell.execute_cell(t3)
 # finally:
-#     shutil.rmtree(shell.run_path)
+#     shutil.rmtree(shell.tmp_path)

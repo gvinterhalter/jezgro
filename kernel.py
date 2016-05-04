@@ -73,25 +73,21 @@ class Jezgro(Kernel):
         # with shell.stdout_redirector(f):
         #     print("HEllo")
 
-        status = 'ok'
-        evalue = ''
+        status = ['ok', '']
         if not silent:
-            reply = self.my_shell.execute_cell(code)
-            status = reply[0]
-            reply = reply[1]
-            evalue = reply
-            stream_content = {'name': 'stdout', 'text': reply}
+            status = self.my_shell.execute_cell(code)
+            stream_content = {'name': 'stdout', 'text': status[1]}
             self.send_response(self.iopub_socket, 'stream', stream_content)
 
 
-        if status == 'ok':
+        if status[0] == 'ok':
             replay_content['status'] = 'ok'
             replay_content['payload'] = []
             replay_content['user_expressions'] = {}
-        elif status == 'error':
+        else:
             replay_content['status'] = 'error'
-            replay_content['ename'] = 'GRESKA!!!'
-            replay_content['evalue'] = evalue
+            replay_content['ename'] = status[0]
+            replay_content['evalue'] = status[1]
             replay_content['traceback'] = []
 
 
