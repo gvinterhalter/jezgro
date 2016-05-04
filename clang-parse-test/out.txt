@@ -1,0 +1,20 @@
+test.cpp (TRANSLATION_UNIT) :  
+  a (VAR_DECL) :  int a = 42 ;
+     (INTEGER_LITERAL) :  
+  b (VAR_DECL) :  float b = 3 ;
+     (UNEXPOSED_EXPR) :  
+       (INTEGER_LITERAL) :  
+  p (VAR_DECL) :  int * p ,
+  nop (VAR_DECL) :  int * p , & nop ( a )
+    a (DECL_REF_EXPR) :  
+  x (VAR_DECL) :  int * p , & nop ( a ) , x ;
+  f() (FUNCTION_DECL) :  int f ( ) { int c = 4 + b ; return a + c ; } struct
+  Vec (STRUCT_DECL) :  struct Vec { int x , y ; } ;
+    x (FIELD_DECL) :  int x ,
+    y (FIELD_DECL) :  int x , y ;
+  g(int, int) (FUNCTION_DECL) :  float g ( int a , int b ) { return a * b ; } static
+    a (PARM_DECL) :  int a ,
+    b (PARM_DECL) :  int b )
+  c (VAR_DECL) :  static char c = 'x' ;
+     (CHARACTER_LITERAL) :  
+  main() (FUNCTION_DECL) :  int main ( ) { return 0 ; }

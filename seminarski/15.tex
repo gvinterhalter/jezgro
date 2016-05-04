@@ -1,0 +1,271 @@
+ % !TEX encoding = UTF-8 Unicode
+
+\documentclass[a4paper]{report}
+
+\usepackage[T2A]{fontenc} % enable Cyrillic fonts
+\usepackage[utf8x,utf8]{inputenc} % make weird characters work
+\usepackage[serbian]{babel}
+%\usepackage[english,serbianc]{babel}
+\usepackage{amssymb}
+
+\usepackage{color}
+\usepackage{url}
+\usepackage[unicode]{hyperref}
+\hypersetup{colorlinks,citecolor=green,filecolor=green,linkcolor=blue,urlcolor=blue}
+
+\newcommand{\odgovor}[1]{\textcolor{blue}{#1}}
+
+\begin{document}
+
+\title{C++ Jezgro za Jupyter Notebook\\ \small{Goran Vinterhalter, Marko Ranković}}
+
+\maketitle
+\tableofcontents
+
+\chapter{Uputstva}
+\emph{Prilikom redavanja odgovora na recenziju, obrišite ovo poglavlje.}
+
+Neophodno je odgovoriti na sve zamerke koje su navedene u okviru recenzija.
+Svaki odgovor pišete u okviru okruženja \verb"\odgovor", \odgovor{kako bi vaši odgovori bili lakše uočljivi.} 
+\begin{enumerate}
+
+\item Odgovor treba da sadrži na koji način ste izmenili rad da bi adresirali problem koji je recenzent naveo. Na primer, to može biti neka dodata rečenica ili dodat pasus. Ukoliko je u pitanju kraći tekst onda ga možete navesti direktno u ovom dokumentu, ukoliko je u pitanju duži tekst, onda navedete samo na kojoj strani i gde tačno se taj novi tekst nalazi. Ukoliko je izmenjeno ime nekog poglavlja, navedite na koji način je izmenjeno, i slično, u zavisnosti od izmena koje ste napravili. 
+
+\item Ukoliko ništa niste izmenili povodom neke zamerke, detaljno obrazložite zašto zahtev recenzenta nije uvažen.
+
+\item Ukoliko ste napravili i neke izmene koje recenzenti nisu tražili, njih navedite u poslednjem poglavlju tj u poglavlju Dodatne izmene.
+\end{enumerate}
+
+Za svakog recenzenta dodajte ocenu od 1 do 5 koja označava koliko vam je recenzija bila korisna, odnosno koliko vam je pomogla da unapredite rad. Ocena 1 označava da vam recenzija nije bila korisna, ocena 5 označava da vam je recenzija bila veoma korisna. 
+
+NAPOMENA: Recenzije ce biti ocenjene nezavisno od vaših ocena. Na osnovu recenzije ja znam da li je ona korisna ili ne, pa na taj način vama idu negativni poeni ukoliko kažete da je korisno nešto što nije korisno. Vašim kolegama šteti da kažete da im je recenzija korisna jer će misliti da su je dobro uradili, iako to zapravo nisu. Isto važi i na drugu stranu, tj nemojte reći da nije korisno ono što jeste korisno. Prema tome, trudite se da budete objektivni. 
+
+\chapter{Prvi recenzent \odgovor{3 ocena:} }
+
+
+\section{O čemu rad govori?}
+% Напишете један кратак пасус у којим ћете својим речима препричати суштину рада (и тиме показати да сте рад пажљиво прочитали и разумели). Обим од 200 до 400 карактера.
+Rad opisuje  Jupyter Notebook, web aplikaciju koja omugućava  kreiranje i deljenje dokumenata koji  mogu da sadrže i interaktivni kod. Dat je i opis arhitekture Jupyter Notebook-a sa akcentom na Jezgrou. Opisani su struktura i tipovi poruka koje Jezgro šalje/prima kao i implementacija Jezgroa tako da parsira C++ kod.
+\section{Krupne primedbe i sugestije}
+% Напишете своја запажања и конструктивне идеје шта у раду недостаје и шта би требало да се промени-измени-дода-одузме да би рад био квалитетнији.
+Rad ne sadrži sažetak. \\
+Potpoglavlje 1.1 Arhitektura nije deo uvoda(izdvojiti potpoglavlje u posebno poglavlje).\\
+\odgovor{Dodato, ODvojeno}
+\section{Sitne primedbe}
+% Напишете своја запажања на тему штампарских-стилских-језичких грешки
+Strana 7 "globalni simoboli".\\
+Strana 8 "forkovani procesi", prvesti forkovani.\\
+Strana 9 "preko plugiin-ova", prevesti plugin.\\
+Strana 10 "predpostavka", ispraviti u pretpotavka.\\
+
+
+\odgovor{ispravljeno}
+
+\section{Provera sadržajnosti i forme seminarskog rada}
+% Oдговорите на следећа питања --- уз сваки одговор дати и образложење
+
+\begin{enumerate}
+\item Da li rad dobro odgovara na zadatu temu?\\
+Da.
+\item Da li je nešto važno propušteno?\\
+Ne.
+\item Da li ima suštinskih grešaka i propusta?\\
+Rad ne sadrži sažetak.
+\item Da li je naslov rada dobro izabran?\\
+Da.
+\item Da li sažetak sadrži prave podatke o radu?\\
+Rad ne sadrži sažetak.
+\item Da li je rad lak-težak za čitanje?\\
+Rad je lak za čitanje.
+\item Da li je za razumevanje teksta potrebno predznanje i u kolikoj meri?\\
+Potrebno je dobro poznavanje C++-a,slabo poznavanje JSON-a i razumevanje rada kompilatora/ interpretatora.
+\item Da li je u radu navedena odgovarajuća literatura?\\
+Da.
+\item Da li su u radu reference korektno navedene?\\
+Da.
+\item Da li je struktura rada adekvatna?\\
+Da.
+\item Da li rad sadrži sve elemente propisane uslovom seminarskog rada (slike, tabele, broj strana...)?\\
+Rad ne sadrži tabelu.
+\odgovor{tabela nije dodata jer nigde nije potrebna}
+\item Da li su slike i tabele funkcionalne i adekvatne?\\
+Na slici 2. se ne vidi da server sadrži Notebook server i Kernel(naznačiti da su Notebook server i Kernel elementi servera). 
+\odgovor{Smatram da je dovoljno naznačiti to u tekstu pre pojavljivanja slike}
+\end{enumerate}
+
+\section{Ocenite sebe}
+% Napišite koliko ste upućeni u oblast koju recenzirate: 
+% a) ekspert u datoj oblasti
+% b) veoma upućeni u oblast
+c) srednje upućeni \\
+% d) malo upućeni 
+% e) skoro neupućeni
+% f) potpuno neupućeni
+% Obrazložite svoju odluku
+Srednje upućen u C++ i kompilatore/interpretatore, potpuno neupućen u Jupyter.
+
+
+
+
+
+
+
+
+
+
+\chapter{Drugi recenzent \odgovor{4 ocena:} }
+
+
+\section{O čemu rad govori?}
+% Напишете један кратак пасус у којим ћете својим речима препричати суштину рада (и тиме показати да сте рад пажљиво прочитали и разумели). Обим од 200 до 400 карактера.
+Rad opisuje program Jupyter Notebook, koji omogućuje prikazivanje dokumenata koji sadrže programski kod. Program se sastoji od servera koji omogućuje manipulaciju ćelijama običnog teksta, i jezgra koje prima ćelije, obrađuje ih i vraća rezultat. Opisani su struktura i tipovi poruka kojima jezgro komunicira sa serverom kao i način na koji se poruke obrađuju i najčešći problemi pri obradi C++ koda. Objašnjen je i mehanizam dinamičkog učitavanja koji služi da simulira interaktivni rad u jeziku C++.
+
+\section{Krupne primedbe i sugestije}
+% Напишете своја запажања и конструктивне идеје шта у раду недостаје и шта би требало да се промени-измени-дода-одузме да би рад био квалитетнији.
+Rad uopšte ne sadrži sažetak. To je jedan od razloga zašto je u početku nejasno šta je cilj rada i potrebno je jedno čitanje kompletnog rada da bi se razumelo o čemu se tačno piše. Posle prvog čitanja, dosta toga postaje jasnije ali postoji nekoliko pojmova koji su samo pomenuti pa je za njihovo razumevanje potrebno konsultovati dodatnu literaturu (JSON, ZeroMQ, soketi...). Takođe, mislim da rad sadrži više koda nego što je potrebno za razumevanja koncepta, i taj deo će svaki osim čitalaca koji su dobro upoznati sa programom verovatno preskočiti.
+
+\odgovor{
+  Višak koda je izbačen. Kako JSON, ZeroMQ i soketi nisu primarni cilj ovog rada uzima se da je čitalac barem donkele upoznat sa njima. Ni jedno od pomenute
+  tri stavke nije preteženo bitno za dalje razumevanje teksta niti za osnovnu implementaciju jezgra.
+}
+
+\section{Sitne primedbe}
+% Напишете своја запажања на тему штампарских-стилских-језичких грешки
+Data je definicija jezgra kao određenog procesa, a dalje u tekstu se gramatički jezgro posmatra kao imenica muškog roda (umesto srednjeg) a za druge padeže se koriste oblici jezgroa, jezgrou koji su nepravilni. Autori su verovatno nepromenljivim oblikom reči jezgro hteli da joj daju na značaju, ali smatram da je to pogrešno. Takođe, u tekstu postoji nekoliko grešaka kao što su gramatički neispravno napisana reč (predpostavka), zamenjeno ili izgubljeno slovo u nekoj reči, višak ili manjak razmaka. Na jednom mestu je naveden fragment koda ali opisan kao slika (Slika 3).
+\odgovor{
+  Nepravilni oblici reči jezgra su izbačeni. Nažalost to je bila grešak search and replace nad reči jezgro.
+  Ostale sitne greške su nadamo se ispravljene.
+}
+
+\section{Provera sadržajnosti i forme seminarskog rada}
+% Oдговорите на следећа питања --- уз сваки одговор дати и образложење
+
+\begin{enumerate}
+\item Da li rad dobro odgovara na zadatu temu?\\
+Da. Detaljno su opisane osnovne stvari vezane za arhitekturu i implementaciju programa koji je tema rada.
+\item Da li je nešto važno propušteno?\\
+S obzirom na način na koji su elementi programa opisani i na to da nisam prethodno znao mnogo o interaktivnom konceptu koji je opisan, verujem da ništa bitno nije propušteno.
+\item Da li ima suštinskih grešaka i propusta?\\
+Ne. Greške koje postoji su sitne i nisu vezane za suštinu rada.
+\item Da li je naslov rada dobro izabran?\\
+Naslov je dobar jer rad upravo opisuje to što je u naslovu.
+\item Da li sažetak sadrži prave podatke o radu?\\
+Sažetak ne postoji.
+\item Da li je rad lak-težak za čitanje?\\
+Rad nije baš lak za čitanje u početku.
+\item Da li je za razumevanje teksta potrebno predznanje i u kolikoj meri?\\
+Potrebno je izvesno poznavanje jezika C++ kao i minimalno poznavanje jezika Python. Postoji nekoliko pojmova koji nisu detaljno opisani u radu pa čitalac koji ih ne poznaje od ranije mora potražiti dodatnu literaturu ako želi da potpuno razume rad.
+\item Da li je u radu navedena odgovarajuća literatura?\\
+Da, odgovarajuća literatura je navedena i čitalac može da se detaljno informiše o svemu što ga zanima u vezi sa obrađenom temom u priloženoj litaraturi.
+\item Da li su u radu reference korektno navedene?\\
+Da, reference su navedene.
+\item Da li je struktura rada adekvatna?\\
+Da, izuzimajući nedostatak sažetka, rad je dobro strukturiran. Prvo je navedena arhitektura programa, a potom su detaljnije obrađeni njeni elementi.
+\item Da li rad sadrži sve elemente propisane uslovom seminarskog rada (slike, tabele, broj strana...)?\\
+Rad ne sadrži nijednu tabelu a i prelazi predviđeni broj strana za kombinovani projekat sa dva člana.
+\item Da li su slike i tabele funkcionalne i adekvatne?\\
+Prva slika je vrlo detaljna, odgovarajuća ali malo naporna za nekoga ko prvi put čita rad jer se nalazi skoro na samom početku. Druga slika je takođe odgovarajuća. Treća slika i nije slika, nego fragment koda. Tabela nema.
+\end{enumerate}
+
+\section{Ocenite sebe}
+% Napišite koliko ste upućeni u oblast koju recenzirate: 
+% a) ekspert u datoj oblasti
+% b) veoma upućeni u oblast
+% c) srednje upućeni
+% d) malo upućeni 
+% e) skoro neupućeni
+% f) potpuno neupućeni
+% Obrazložite svoju odluku
+
+d) malo upućen.
+Programi ove vrste su nešto sa čime sam se sretao samo u vrlo retkim prilika dok mi je njihova implementacija potpuno strana. Poznajem jezik C++ tako da mi taj deo rada nije bio novina.
+
+
+\chapter{Treći recenzent \odgovor{4 ocena:} }
+
+\section{O čemu rad govori?}
+U radu se govori o Jupyter Notebook softveru kao aplikaciji za kreiranje i deljenje dokumenata, upoznavanje sa softverom. Prikazane su mogućnosti razvoja Jezgro-a za programski jezik C++.
+Delimično se kroz primere upoznajemo sa korišćenjem raznih funkcija, bibilioteka (libclang). Uvidjamo probleme koji se javljaju pri implementaciji Jezgro-a.
+
+
+\section{Krupne primedbe i sugestije}
+Nedostaje sažetak na početku.
+Prvi deo uvoda identično preveden sa engleskog sa reference pod brojem 2.
+Kroz ceo tekst se koriste reči engleskog jezika koje nisu navedene na zahtevan način primer (eng. help).
+Korišćenje reči poput introspekcija kojih ima dosta bespotrebno se koriste kada postoje odgovarajući prevodi.
+\odgovor{
+ Engleske reči su maksimalno popravljen. Ostalo je samo par primera za koje mislim da nema svrhe zaokruživati ih. 
+}
+
+\section{Sitne primedbe}
+Odeljak 1.1 stavka 2, u prvom pasusu drugi red Jezgro je takođe zaduženo (fali o)
+Odeljak 1.1 drugi pasus četvrti red help staviti srpsku reč i u zagradi eng pa englesku reč
+strana 3. 4.pasus 2.red treba u reci implementiran nedostaje na kraju o
+zameniti engleske reči srpskim i u zagradama dodati (eng. engleska reč) ima ih na mnogo mesta
+
+\odgovor{
+  pokušali smo sve da ispravimo
+}
+
+\section{Provera sadržajnosti i forme seminarskog rada}
+
+\begin{enumerate}
+\item Da li rad dobro odgovara na zadatu temu?\\
+U principu da, odgovara naslovu rada, dati su primeri...
+
+\item Da li je nešto važno propušteno?\\
+Mislim da je suština napisana tako da sve važno je rečeno.
+
+\item Da li ima suštinskih grešaka i propusta?\\
+uglavnom ne osim nedostatka objašnjenja za neke pojmove za koje je potrebno konsultovati google
+
+\item Da li je naslov rada dobro izabran?\\
+jeste-sadržaj rada u potpunosti odgovara naslovu
+
+\item Da li sažetak sadrži prave podatke o radu?\\
+ne-nema sažetka
+\odgovor{dodat}
+
+\item Da li je rad lak-težak za čitanje?\\
+težak-opšti utisak je da autori imaju znanja o temi ali da ne prezentuju to na najbolji način, što zbog stila pisanja, što zbog pojmova
+koji nisu objašnjeni
+
+\item Da li je za razumevanje teksta potrebno predznanje i u kolikoj meri?\\
+potrebno je predznanje u solidnoj meri i uz čitanje rada potrebno je konsultovati google za određene pojmove objašnjenja itd
+
+\item Da li je u radu navedena odgovarajuća literatura?\\
+da-literature ima sasvim dovoljno i utisak je da je dovoljna za detaljnije upoznavanje sa ovom temom
+
+\item Da li su u radu reference korektno navedene?\\
+reference su upotrebljne samo na par mesta, nisu upotrebljene na mestima gde se citira tuđi tekst
+\odgovor{
+  dodali smo  više citata.
+}
+
+\item Da li je struktura rada adekvatna?\\
+ne-potrebno je preformatirati i izmeniti redosled određenih sekcija kako bi čitaoc što lakše razumeo suštinu rada
+\odgovor{
+neke sekcije su preformatirane, uglavnom na kraju
+}
+
+\item Da li rad sadrži sve elemente propisane uslovom seminarskog rada (slike, tabele, broj strana...)?\\
+nedostaje tabela, slike i broj strana su odgovarajući
+
+\item Da li su slike i tabele funkcionalne i adekvatne?\\
+da-slike prikazuju ono o čemu se piše i pomažu u razumevanju
+
+\end{enumerate}
+
+\section{Ocenite sebe}
+Po prvi put se susrećem sa ovom temom, bilo mi je zanimljivo da naučim nešto novo izneo sam svoje utiske iako nisam ekspert za ovu temu.
+
+%\chapter{Četvrti recenzent \odgovor{--- ocena:} }
+
+\chapter{Dodatne izmene}
+%Ovde navedite ukoliko ima izmena koje ste uradili a koje vam recenzenti nisu tražili. 
+
+Rad je dosta izmenjen da bi reflektovao nova saznanja i iskustva koje smo stekli implementirajući prototip.
+
+\end{document}
+
+
