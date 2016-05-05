@@ -15,20 +15,31 @@ RTLD_NODELETE = 4096
 RTLD_NOLOAD = 4
 RTLD_DEEPBIND = 8
 
-
-objects = []
-
-libc = ctypes.CDLL(None)
+regex_comment = re.compile(r'/\*.*?\*/|//.*?$', re.MULTILINE|re.DOTALL)
+# ograniceni smo da magic mora da se zavrsi sa \n a pre je dozvoljeno samo blanko
+regex_line_magic = re.compile(r'^\s*(%[a-zA-Z_][a-zA-Z_0-9]*)(.*)', re.MULTILINE)
+regex_cell_magic = re.compile(r'^\s*(%%[a-zA-Z_][a-zA-Z_0-9]*)(.*)', re.DOTALL)
+regex_msg_fillter = re.compile(r'^/tmp/[^ \s\t]*\s', re.MULTILINE)
 
 class CompileErr(BaseException):
+    def __init__(self, msg):
+        print(msg)
+        self.error = msg
     def __str__(self):
-        return ""
+        return self.error
+
+class MagicError(BaseException):
+    def __init__(self, msg=""):
+        self.error=msg
+    def __str__(self):
+        return self.error
+
+
+def fillter_msg(msg):
+    return re.sub(regex_msg_fillter, '', msg, re.MULTILINE)
+
 
 class ShellPlusPlus:
-    reComment = re.compile(r'/\*.*?\*/|//.*?$', re.MULTILINE|re.DOTALL)
-    # ograniceni smo da magic mora da se zavrsi sa \n a pre je dozvoljeno samo blanko
-    reMagic = re.compile(r'^\s*(%[a-zA-Z_][a-zA-Z_0-9]*.*)', re.MULTILINE)
-    reCellMagic = re.compile(r'^\s*(%%[a-zA-Z_][a-zA-Z_0-9]*.*)')
 
     def  __init__(self):
 
@@ -43,10 +54,23 @@ class ShellPlusPlus:
         self.tmp_path = tempfile.mkdtemp("_c++jezgro")
         self.i = 0
 
+        self.code = False # da li da prikaze kod koji se kompajlira
+        self.run_template = """
+void __run__(void) { 
+  try{
+      %s
+  } catch (std::exception& e) {
+      std::cout << "Exception catched : " << e.what() << std::endl;
+  }
+}
+        """
+
         self.decl = sharedObject();
         self.tmp_decl = sharedObject();
         self.eval_lines = []
         
+
+        # stdin, stdout, adn stderr redirection
 
         r, w = os.pipe()
         fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
@@ -73,18 +97,11 @@ class ShellPlusPlus:
         result.append( self.tmp_decl.get('variables') )
         result.append( self.tmp_decl.get('functions') )
         result.append(code)
+
         if len(self.eval_lines) > 0:
-            result.append("""
-void __run__(void) { 
-try{ %s }
-catch (std::exception& e)
-{
-    std::cout << "Exception catched : " << e.what() << std::endl;
-}
-}
-                    """ %
-                           '\n'.join(self.eval_lines))
-        return '\n'.join(result)
+            result.append( self.run_template % '\n'.join(self.eval_lines))
+
+        return '\n'.join(result).strip()
 
     def prepare(self, code):
         self.tmp_decl = copy.deepcopy(self.decl)
@@ -110,6 +127,8 @@ catch (std::exception& e)
         with open(compile_path, 'w') as f: 
             f.writelines(code)
 
+        # ne zelim da korisnik moze da ukloni -fpic i -shared, zato
+        # ih eksplicitno navodim
         compile_command = [self.compiler, "-fpic", "-shared"]
         compile_command += self.compile_flags 
         compile_command += self.include_paths 
@@ -120,102 +139,135 @@ catch (std::exception& e)
 
         if subprocess.call(compile_command):
             #error ( vraca razlicito od nula kad je greska)
-            raise CompileErr
+            raise CompileErr(self.err.read())
 
         return result_path
 
     def load(self, so_file):
+        ''' Ucitavamo deljenu biblioteku, koristimo:
+            RTLD_GLOBAL, RTLD_DEEPBIND i RTLD_NOW '''
         so_handle = ctypes.CDLL(so_file, RTLD_GLOBAL|RTLD_DEEPBIND|RTLD_NOW)
         return so_handle
+
+    def run(self, handle):
+        ''' Pozivamo funkciju void __run__(void)) u deljenom objektu
+            Ako ne postoji bice bacen izuzetak AttributeError koji ignorisemo '''
+        handle[b'_Z7__run__v']() 
 
     def execute_code(self, code):
         '''Izvrsavamo kod(prepare,compile,load,execute)'''
 
         status = ["ok", '']
 
-        if code == None or len(code.strip()) == 0:
+        if code == None or (len(code.strip()) == 0 and self.eval_lines == []):
             return status
 
         try:
             code = self.prepare(code)
             so_file = self.compile(code)
             so_handle = self.load(so_file)
-            so_handle[b'_Z7__run__v']() # pozivamo funkciju void __run__(void)
+            self.run(so_handle)
             status[1] = self.out.read()
 
-        except CompileErr:
-            status = ['Compile Error', str(self.err.read())]
+        except CompileErr as e:
+            status = ['Compile Error', fillter_msg(str(e)) ]
 
-        except OSError:
-            status = ['Link Error', 'link greska']
+        except OSError as e:
+            status = ['Link Error', fillter_msg(str(e))]
 
         except AttributeError:
             pass # funkcija run ne postoji
+
+        # self.code = True
+        if self.code:
+            status[1] += '----------------------\n%s' % code.strip()
+            # print(status[1])
         
         return status
 
     def execute_cell(self, code):
-        self.eval_lines = []   # Ovde cuvamo linije sa %r 
-        code = re.sub(self.reComment, "", code) #uklanjamo komentare
+        '''Izvrsavamo kod celije'''
 
         status = []
-        #pokusavamo da uparimo cell magic
-        m = re.match(self.reCellMagic, code)
-        if m:
-            magic = m.group(1)
-            status = self.execute_cell_magic(magic, code[m.end():])
-        else:
-            code = self.inject_magic(code) # mozda ima line magic 
-            status = self.execute_code(code)
+        self.eval_lines = []   # Ovde cuvamo linije sa %r 
+        code = re.sub(regex_comment, "", code) #uklanjamo komentare
+
+        #pokusavamo da uparimo cell magic, m.group(0) je magic
+        m = re.match(regex_cell_magic, code)
+
+        try:
+            if m:
+                status = self.execute_magic(m.group(1), m.group(2))
+            else:
+                code = self.inject_magic(code) # mozda ima line magic 
+                status = self.execute_code(code)
+        
+        except MagicError as e:
+            return ['error', str(e)]
 
         if status[0] == 'ok':
             self.decl = self.tmp_decl
+
 
         return status
         
 
 
-    def execute_cell_magic(self, magic, code):
-        return self.execute_code(code)
+    def execute_magic(self, magic, code):
+        if magic in self.magics:
+            return self.magics[magic](self, code)
 
-    def execute_magic(self, magic):
-        # return "/* %s */" % (magic)
-        ms = magic.split()
-        magic, code = ms[0], ' '.join(ms[1:])
-        if magic == "%r":
-            self.eval_lines.append(code)
-        return "/* %s */" % (magic)
+        raise MagicError("%s is not defined" % magic)
+
+        
 
     def inject_magic(self, code):
         magic_code = ""
-        ms = re.finditer(self.reMagic, code) # trazimo sva pojavljivanja
+
         i = 0
-        for m in ms:
-            magic_code += code[i : m.start()]
-            magic_code += self.execute_magic(m.group(1))
+        for m in re.finditer(regex_line_magic, code):
+            magic_code += code[i : m.start()] # sta smo uhvatili pre %r
+            magic_code += self.execute_magic(m.group(1), m.group(2)) # obradjena %r linija
             i = m.end()
-        magic_code += code[i:]
+
+        magic_code += code[i:] # sta ide nakon poslednje %r linije
+
         return magic_code
 
+
+
+    ##  definisemo magic funkcije ##
+
+    def _line_r(self, code):
+        self.eval_lines.append(code)
+        return ''
+
+    def _cell_r(self, code):
+        code = self.inject_magic(code) # mozda ima nekih line magic-a
+        self.eval_lines.append(code)
+        self.prepare(code)
+        return self.execute_code('/* run */') 
+
+    magics = {
+            "%r" : _line_r,
+            "%%r" : _cell_r,
+             }
 
 t0 = """
 #include <iostream>
 using namespace std;
 
-int a = ;
+int a = 6
 %r cout << a << endl;
 
 """
-#
-# t0_1 = """
-#
-# int print(){
-#   cout << "hello world " << a << endl;
-#   return 4;
-# }
-#
-# %r    print();
-# """
+
+t0_1 = """
+%%rr 
+cout << a << endl;
+cout << a << endl;
+cout << a << endl;
+"""
 
 # t1 = """
 # %%hello -s -c -d -f
@@ -255,14 +307,14 @@ int a = ;
 #
 #  """ 
 #
-# import shutil
-#
-# shell = ShellPlusPlus()
-# try:
-#     shell.execute_cell(t0)
-#     # shell.execute_cell(t0_1)
-#     # shell.execute_cell(t1)
-#     # shell.execute_cell(t2)
-#     # shell.execute_cell(t3)
-# finally:
-#     shutil.rmtree(shell.tmp_path)
+import shutil
+
+shell = ShellPlusPlus()
+try:
+    shell.execute_cell(t0)
+    shell.execute_cell(t0_1)
+    # shell.execute_cell(t1)
+    # shell.execute_cell(t2)
+    # shell.execute_cell(t3)
+finally:
+    shutil.rmtree(shell.tmp_path)
