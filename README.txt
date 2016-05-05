@@ -46,6 +46,7 @@ Nedostaci:
     tacnije moguce je prvi put kad se pokrene. Ali ako se pozove simbol u nekoj
     trecoj celiji loader ce naci onu prvu definiciju simbola prvo. (velika man)
   - code completition (tab) ne radi (tacnije vraca nesto bezveze)
+  - gomilaj se tmp jupyter direktorijumi u /tmp (zvuci trivijalno problem, znam)
 
 preporucuje se citanje shell.py jer kod lepo objasnjava ideju izvrsavanja.
 tags.py nije refaktorisan i malo je ruzan
