@@ -59,6 +59,7 @@ class ShellPlusPlus:
 void __run__(void) { 
   try{
       %s
+      cout.flush();
   } catch (std::exception& e) {
       std::cout << "Exception catched : " << e.what() << std::endl;
   }
@@ -72,10 +73,10 @@ void __run__(void) {
 
         # stdin, stdout, adn stderr redirection
 
-        r, w = os.pipe()
-        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
-        os.dup2(w, 1)
-        self.out = os.fdopen(r)
+        # r, w = os.pipe()
+        # fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        # os.dup2(w, 1)
+        # self.out = os.fdopen(r)
 
         r, w = os.pipe()
         fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
@@ -86,6 +87,8 @@ void __run__(void) {
         fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
         os.dup2(r, 0)
         os.write(w, b'aa')
+
+        status = self.execute_cell("#include <iostream>\nusing namespace std;")
 
 
     def insert_declarations(self, code):
@@ -100,6 +103,7 @@ void __run__(void) {
 
         if len(self.eval_lines) > 0:
             result.append( self.run_template % '\n'.join(self.eval_lines))
+
 
         return '\n'.join(result).strip()
 
@@ -178,10 +182,10 @@ void __run__(void) {
         except AttributeError:
             pass # funkcija run ne postoji
 
-        # self.code = True
+        self.code = True
         if self.code:
-            status[1] += '----------------------\n%s' % code.strip()
-            # print(status[1])
+            status[1] = '<-code->\n%s\n<------>\n%s' % (code, status[1])
+            print(status[1])
         
         return status
 
@@ -254,16 +258,13 @@ void __run__(void) {
              }
 
 t0 = """
-#include <iostream>
-using namespace std;
-
-int a = 6
+int a = 6;
 %r cout << a << endl;
 
 """
 
 t0_1 = """
-%%rr 
+%%r 
 cout << a << endl;
 cout << a << endl;
 cout << a << endl;
