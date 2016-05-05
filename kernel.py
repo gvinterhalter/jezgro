@@ -3,7 +3,11 @@ from ipykernel.kernelbase import Kernel
 
 from subprocess import call
 
-from shell import *
+import sys, os
+
+
+from jezgro.shell import *
+
 
 
 class Jezgro(Kernel):

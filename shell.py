@@ -5,8 +5,9 @@ import copy
 
 import ctypes
 
-from tags import *
+from jezgro.tags import *
 
+# ctypes ne definise sve konstantne za C dl_open f-ju pa ih rucno definisemo
 RTLD_NOW = 1
 RTLD_LAZY = 2
 RTLD_GLOBAL = 256
@@ -16,7 +17,7 @@ RTLD_NOLOAD = 4
 RTLD_DEEPBIND = 8
 
 regex_comment = re.compile(r'/\*.*?\*/|//.*?$', re.MULTILINE|re.DOTALL)
-# ograniceni smo da magic mora da se zavrsi sa \n a pre je dozvoljeno samo blanko
+# magic je ogranicen na jednu liniju
 regex_line_magic = re.compile(r'^\s*(%[a-zA-Z_][a-zA-Z_0-9]*)(.*)', re.MULTILINE)
 regex_cell_magic = re.compile(r'^\s*(%%[a-zA-Z_][a-zA-Z_0-9]*)(.*)', re.DOTALL)
 regex_msg_fillter = re.compile(r'^/tmp/[^ \s\t]*\s', re.MULTILINE)
@@ -52,19 +53,9 @@ class ShellPlusPlus:
 
         # gde ce biti smesteni tmp fajlovi za kompilaciju
         self.tmp_path = tempfile.mkdtemp("_c++jezgro")
-        self.i = 0
+        self.i = 1
 
-        self.code = False # da li da prikaze kod koji se kompajlira
-        self.run_template = """
-void __run__(void) { 
-  try{
-      %s
-      cout.flush();
-  } catch (std::exception& e) {
-      std::cout << "Exception catched : " << e.what() << std::endl;
-  }
-}
-        """
+        self.debug = False # da li da prikaze kod koji se kompajlira
 
         self.decl = sharedObject();
         self.tmp_decl = sharedObject();
@@ -73,10 +64,10 @@ void __run__(void) {
 
         # stdin, stdout, adn stderr redirection
 
-        # r, w = os.pipe()
-        # fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
-        # os.dup2(w, 1)
-        # self.out = os.fdopen(r)
+        r, w = os.pipe()
+        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        os.dup2(w, 1)
+        self.out = os.fdopen(r)
 
         r, w = os.pipe()
         fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
@@ -88,6 +79,16 @@ void __run__(void) {
         os.dup2(r, 0)
         os.write(w, b'aa')
 
+        self.run_template = """
+void __run__(void) { 
+  try{
+      %s
+      cout.flush();
+  } catch (std::exception& e) {
+      std::cout << "Exception catched : " << e.what() << std::endl;
+  }
+}
+        """
         status = self.execute_cell("#include <iostream>\nusing namespace std;")
 
 
@@ -163,8 +164,11 @@ void __run__(void) {
 
         status = ["ok", '']
 
-        if code == None or (len(code.strip()) == 0 and self.eval_lines == []):
-            return status
+        no_code = False
+        if no_code and (len(code.strip())):
+            no_code = True
+            if self.eval_lines == []:
+                return status
 
         try:
             code = self.prepare(code)
@@ -172,6 +176,10 @@ void __run__(void) {
             so_handle = self.load(so_file)
             self.run(so_handle)
             status[1] = self.out.read()
+
+            if no_code:
+                pass
+                # unload so_handle TODO 
 
         except CompileErr as e:
             status = ['Compile Error', fillter_msg(str(e)) ]
@@ -182,10 +190,8 @@ void __run__(void) {
         except AttributeError:
             pass # funkcija run ne postoji
 
-        self.code = True
-        if self.code:
+        if self.debug:
             status[1] = '<-code->\n%s\n<------>\n%s' % (code, status[1])
-            print(status[1])
         
         return status
 
@@ -256,66 +262,3 @@ void __run__(void) {
             "%r" : _line_r,
             "%%r" : _cell_r,
              }
-
-t0 = """
-int a = 6;
-%r cout << a << endl;
-
-"""
-
-t0_1 = """
-%%r 
-cout << a << endl;
-cout << a << endl;
-cout << a << endl;
-"""
-
-# t1 = """
-# %%hello -s -c -d -f
-#
-#     int print(){
-#       cout << "hello world " << a << endl;
-#       return 4;
-#     }
-#
-#     int pprint(){
-#         print();
-#         print();
-#         return 0;
-#     }
-#
-#
-#     void __run__(void){
-#         print();
-#     }
-#
-# """ 
-# t2 = """
-#
-#     void print(){
-#        cout << " MAAAAAA " << endl;
-#     }
-#
-#     void __run__(void){
-#         print();
-#     }
-#
-#  """ 
-# t3= """
-#
-#
-#     voi __run__(void){ print(); }
-#
-#  """ 
-#
-import shutil
-
-shell = ShellPlusPlus()
-try:
-    shell.execute_cell(t0)
-    shell.execute_cell(t0_1)
-    # shell.execute_cell(t1)
-    # shell.execute_cell(t2)
-    # shell.execute_cell(t3)
-finally:
-    shutil.rmtree(shell.tmp_path)
