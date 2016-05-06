@@ -1,4 +1,4 @@
-import clang.cindex as clg, asciitree, sys
+import clang.cindex as clg
 index = clg.Index.create()
 tu = index.parse("t1.cpp")
 
@@ -24,8 +24,8 @@ def prodji(n):
 
     print("%s%s" %(i*"  ", info))
 
-    for x in n.get_arguments():
-        print(x.displayname)
+    # for x in n.get_arguments():
+    #     print(x.displayname)
 
     for c in n.get_children():
         i += 1

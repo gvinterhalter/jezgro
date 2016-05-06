@@ -1,4 +1,4 @@
-import os, fcntl, sys ,io, tempfile
+import os, fcntl, sys ,io, tempfile, atexit
 import subprocess
 import re
 import copy
@@ -52,7 +52,10 @@ class ShellPlusPlus:
         self.compiler = "g++"
 
         # gde ce biti smesteni tmp fajlovi za kompilaciju
-        self.tmp_path = tempfile.mkdtemp("_c++jezgro")
+        self.tmp_dir = tempfile.TemporaryDirectory(
+                suffix = "_c++jezgro" )
+        atexit.register(lambda : self.tmp_dir.cleanup() )
+        
         self.i = 1
 
         self.debug = False # da li da prikaze kod koji se kompajlira
@@ -127,8 +130,9 @@ void __run__(void) {
         ''' Kompajliramo kod i proizvodimo .cpp i .so'''
         self.i += 1
 
-        compile_path = self.tmp_path + "/%i.cpp" % self.i
-        result_path  = self.tmp_path + "/%i.so"  % self.i
+        tmp_path = self.tmp_dir.name
+        compile_path = tmp_path + "/%i.cpp" % self.i
+        result_path  = tmp_path + "/%i.so"  % self.i
 
         with open(compile_path, 'w') as f: 
             f.writelines(code)

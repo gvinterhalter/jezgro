@@ -1,4 +1,4 @@
 
-int * * a;
+int * * a = nullptr;
 
-auto b = 5;
+auto b = a;
