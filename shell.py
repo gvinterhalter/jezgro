@@ -60,6 +60,7 @@ class ShellPlusPlus:
         self.decl = sharedObject();
         self.tmp_decl = sharedObject();
         self.eval_lines = []
+        self.status = ''
         
 
         # stdin, stdout, adn stderr redirection
@@ -69,15 +70,15 @@ class ShellPlusPlus:
         os.dup2(w, 1)
         self.out = os.fdopen(r)
 
-        r, w = os.pipe()
-        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
-        os.dup2(w, 2)
-        self.err = os.fdopen(r)
-
-        r, w = os.pipe()
-        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
-        os.dup2(r, 0)
-        os.write(w, b'aa')
+        # r, w = os.pipe()
+        # fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        # os.dup2(w, 2)
+        # self.err = os.fdopen(r)
+        #
+        # r, w = os.pipe()
+        # fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        # os.dup2(r, 0)
+        # os.write(w, b'aa')
 
         self.run_template = """
 void __run__(void) { 
@@ -191,15 +192,17 @@ void __run__(void) {
             pass # funkcija run ne postoji
 
         if self.debug:
-            status[1] = '<-code->\n%s\n<------>\n%s' % (code, status[1])
+           self.aditional.append('<----code---->\n%s\n<--------->\n' % (code))
         
         return status
 
     def execute_cell(self, code):
         '''Izvrsavamo kod celije'''
 
-        status = []
-        self.eval_lines = []   # Ovde cuvamo linije sa %r 
+        self.aditional  = []       # dodatne poruke, pre izlaza
+        self.eval_lines = []   # Ovde cuvamo linije sa %r ili %%r 
+        status = []            # povratna vrednost
+
         code = re.sub(regex_comment, "", code) #uklanjamo komentare
 
         #pokusavamo da uparimo cell magic, m.group(0) je magic
@@ -215,9 +218,11 @@ void __run__(void) {
         except MagicError as e:
             return ['error', str(e)]
 
+        # ako je uspesno izvrseno treba osveziti deklaracije
         if status[0] == 'ok':
             self.decl = self.tmp_decl
 
+        status[1] = '\n'.join( self.aditional + [status[1]] )
 
         return status
         
@@ -258,7 +263,18 @@ void __run__(void) {
         self.prepare(code)
         return self.execute_code('/* run */') 
 
+    def _line_debug(self, code):
+        try:
+            self.debug = bool(int(code)) if code.strip() else True
+        except:
+            raise MagicError("'%s' must be '0' or '1'" % code.strip())
+
+        self.aditional.append("%debug = " + str(self.debug) )
+        return ''
+
+
     magics = {
             "%r" : _line_r,
             "%%r" : _cell_r,
+            "%debug" : _line_debug,
              }

@@ -1,0 +1,129 @@
+% !TEX encoding = UTF-8 Unicode
+
+\documentclass[a4paper]{article}
+
+\usepackage[T2A]{fontenc} % enable Cyrillic fonts
+\usepackage[utf8x,utf8]{inputenc} % make weird characters work
+\usepackage[serbian]{babel}
+%\usepackage[english,serbianc]{babel}
+\usepackage{amssymb}
+
+\usepackage{color}
+\usepackage{url}
+\usepackage[unicode]{hyperref}
+\hypersetup{colorlinks,citecolor=green,filecolor=green,linkcolor=blue,urlcolor=blue}
+
+\newcommand{\odgovor}[1]{\textcolor{blue}{#1}}
+
+\begin{document}
+
+\title{Jenkins ukratko\\
+  \small{Uroš Milenković, Nikola Sojčić, Bojan Nestorović
+}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{Recenzija: Goran Vinterhalter}
+%ime autora recenzije neće biti predato autorima seminarskog rada
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\maketitle
+
+\section{O čemu rad govori?}
+Rad opisuje osnovne mogućnosti softverskog paketa Jenkins koji automatizuje
+procese: prevođenja, testiranja, arhiviranja i deployment-a fokusirajući se na 
+sekvencionalni metod izvršavanja.
+
+\section{Krupne primedbe i sugestije}
+
+Rad potpuno ignoriše \textit{"eng. pipeline"} pristup i fokusira se isključivo na slobodne
+projekte koji dozvoljavaju samo sekvencijalno izvršavanje zadataka. Tvrđenje da slobodni
+projekat pruža maksimalnu fleksibilnost s'toga nije tačna.
+
+Opis opcije parametrizovane izgradnje (\textit{eng. parametrized build}) treba
+dopuniti konkretnijim primerima. Neupućenom čitaocu je teško razumeti kakve kakve su
+to opcije koje se prosleđuju i koji format bi bio pogodniji za koju situaciju.
+
+\section{Sitne primedbe}
+Rad se u nekim trenucima čini kao kratak tutorijal za početnike umesto uopštenog
+pregleda mogućnosti. Navođenje detalja kao što su opisi instalacije proširenja
+(git ...) ili specifičnosti kreiranja novog projekta nisu toliko bitne za 
+samu temu.
+
+Trebalo bi izbegavati rečenice kao što su:
+\begin{itemize}
+  \item "pokušaćemo da zagrebemo površinu ovog složenog sistema", jer rad čini manje vrednim.
+\end{itemize}
+Postoji nekoliko sitnih grešaka pri kucanju.
+
+  
+
+
+\section{Provera sadržajnosti i forme seminarskog rada}
+
+\begin{enumerate}
+\item Da li rad dobro odgovara na zadatu temu?\\
+  Da, rad je za temu imao da opiše mogućnosti i prednosti softvera Jenkins što je i opisano.
+\item Da li je nešto važno propušteno?\\
+  Pipeline (ili workflow ) je postao standard za upravljanje kompleksnijim nelinearnim
+  izvršavanjem. U ovom radu pipeline je potpuno zanemaren. Takođe postoji specijalna
+  terminologija koja se koristi za definisanje jednog pipeline konfiguracionog fajla koju bi trebalo
+  navesti i predstaviti jedan šematski prikaz.
+\item Da li ima suštinskih grešaka i propusta?\\
+  Nema.
+\item Da li je naslov rada dobro izabran?\\
+  Da.
+\item Da li sažetak sadrži prave podatke o radu?\\
+  Da.
+\item Da li je rad lak-težak za čitanje?\\
+  Rad je pitak i lepo ilustrovan uz par primedbi navedenih gore.
+\item Da li je za razumevanje teksta potrebno predznanje i u kolikoj meri?\\
+  Jeste. \\
+  Neophodno je razumevanje oblasti:
+  \begin{enumerate}
+      \item Životni ciklus razvoja softvera.
+      \item Version sistemi, prvenstveno git.
+      \item Unit testovi.
+  \end{enumerate}
+\item Da li je u radu navedena odgovarajuća literatura?\\
+  Da.
+\item Da li su u radu reference korektno navedene?\\
+  U radu postoji samo jedna referenca. Potrebno je da svako veće tvrđenje bude podržano
+  sa odgovarajućom referencom. Recimo navodi se da je najznačajnija stvar za jenkins integracija
+  sa sistemom za kontrolu verzija. Zašto to tvrđenje nema referencu a tvrđenje za Unit testove ima?
+\item Da li je struktura rada adekvatna?\\
+  Struktura je adekvatna, ali fale reference.
+\item Da li rad sadrži sve elemente propisane uslovom seminarskog rada (slike, tabele, broj strana...)?\\
+  Da.
+\item Da li su slike i tabele funkcionalne i adekvatne?\\
+  Da, jedino bi valjalo da se pojavljuju malo ranije u tekstu radi lakšeg praćenja.
+  Poslednju tabelu bi trebalo Transponovati. Praksa je da se tabele koje predstavljaju
+  razlike između 2 i više softvera prave tako da jedna opcija odgovara jednom redu.
+\end{enumerate}
+
+
+
+\section{Ocenite sebe}
+% Napišite koliko ste upućeni u oblast koju recenzirate: 
+% a) ekspert u datoj oblasti
+% b) veoma upućeni u oblast
+% c) srednje upućeni
+d) malo upućeni \\
+% e) skoro neupućeni
+% f) potpuno neupućeni
+% Obrazložite svoju odluku
+Tokom obrazovanja nisam imao kontakt sa rešenjima kao što su Jenkins.
+Međutim zbog kurseva kao što su: Razvoj softvera 1, 2 i Microsoft kurseva imam 
+dobru ideju o potrebama razvojnih timova.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Poverljivi komentari}
+% Poverljivi komentari neće biti prosleđeni autorima seminarskog rada.
+% Ukoliko nemate poverljivih komentara, ovaj deo može da ostane prazan.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
+
+
