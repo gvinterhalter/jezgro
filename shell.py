@@ -153,16 +153,17 @@ void __run__(void) {
 
         return result_path
 
-    def load(self, so_file):
+    def load(self, so_path):
         ''' Ucitavamo deljenu biblioteku, koristimo:
             RTLD_GLOBAL, RTLD_DEEPBIND i RTLD_NOW '''
-        so_handle = ctypes.CDLL(so_file, RTLD_GLOBAL|RTLD_DEEPBIND|RTLD_NOW)
+        so_handle = ctypes.CDLL(so_path, RTLD_GLOBAL|RTLD_DEEPBIND|RTLD_NOW)
         return so_handle
 
     def run(self, handle):
         ''' Pozivamo funkciju void __run__(void)) u deljenom objektu
             Ako ne postoji bice bacen izuzetak AttributeError koji ignorisemo '''
         handle[b'_Z7__run__v']() 
+
 
     def execute_code(self, code):
         '''Izvrsavamo kod(prepare,compile,load,execute)'''
@@ -177,8 +178,8 @@ void __run__(void) {
 
         try:
             code = self.prepare(code)
-            so_file = self.compile(code)
-            so_handle = self.load(so_file)
+            so_path = self.compile(code)
+            so_handle = self.load(so_path)
             self.run(so_handle)
             status[1] = self.out.read()
 
@@ -194,6 +195,10 @@ void __run__(void) {
 
         except AttributeError:
             pass # funkcija run ne postoji
+
+        finally:
+            os.remove(so_path)
+            os.remove(so_path[:-3]+".cpp")
 
         if self.debug:
            self.aditional.append('<----code---->\n%s\n<--------->\n' % (code))
