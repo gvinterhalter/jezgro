@@ -73,15 +73,15 @@ class ShellPlusPlus:
         os.dup2(w, 1)
         self.out = os.fdopen(r)
 
-        # r, w = os.pipe()
-        # fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
-        # os.dup2(w, 2)
-        # self.err = os.fdopen(r)
-        #
-        # r, w = os.pipe()
-        # fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
-        # os.dup2(r, 0)
-        # os.write(w, b'aa')
+        r, w = os.pipe()
+        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        os.dup2(w, 2)
+        self.err = os.fdopen(r)
+
+        r, w = os.pipe()
+        fcntl.fcntl(r, fcntl.F_SETFL, os.O_NONBLOCK)
+        os.dup2(r, 0)
+        os.write(w, b'aa')
 
         self.run_template = """
 void __run__(void) { 
@@ -149,6 +149,7 @@ void __run__(void) {
 
         if subprocess.call(compile_command):
             #error ( vraca razlicito od nula kad je greska)
+            os.remove(compile_path)
             raise CompileErr(self.err.read())
 
         return result_path
@@ -157,6 +158,11 @@ void __run__(void) {
         ''' Ucitavamo deljenu biblioteku, koristimo:
             RTLD_GLOBAL, RTLD_DEEPBIND i RTLD_NOW '''
         so_handle = ctypes.CDLL(so_path, RTLD_GLOBAL|RTLD_DEEPBIND|RTLD_NOW)
+
+        if os.path.isfile(so_path[-3]+'.cpp'):
+            os.remove(so_path[-3:]+'.cpp')
+            os.remove(so_path)
+
         return so_handle
 
     def run(self, handle):
@@ -195,10 +201,6 @@ void __run__(void) {
 
         except AttributeError:
             pass # funkcija run ne postoji
-
-        finally:
-            os.remove(so_path)
-            os.remove(so_path[:-3]+".cpp")
 
         if self.debug:
            self.aditional.append('<----code---->\n%s\n<--------->\n' % (code))
