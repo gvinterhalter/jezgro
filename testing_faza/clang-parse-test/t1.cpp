@@ -1,4 +1,5 @@
 
 int * * a = nullptr;
 
-auto b = a;
+auto b = 3.14;
+auto f(int  c) {return nullptr};

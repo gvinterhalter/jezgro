@@ -1,11 +1,6 @@
-import os
-import sys
-import re
-import io
-import subprocess
-import tempfile
+import os, sys, re, io, subprocess, tempfile
 
-otherRegex = re.compile(
+extraTagsRegex = re.compile(
     r'''^\s*(#define|#include|using(?:\s+namespace)?)(.+)'''
     , re.MULTILINE)
 
@@ -82,8 +77,6 @@ def get_declarations(code):
 
     so = sharedObject()
 
-
-
     for tokens in tokenText.split('\n'):
         tokens = tokens.split('\t')
 
@@ -91,11 +84,12 @@ def get_declarations(code):
 
         if kind  == 'f': #function
             if not get("class", tokens):
-                d = tokens[0] + tokens[5].split(':')[1] + ';'
-                return_value = tokens[2][2:].split(tokens[0])
-                d = return_value[0] + d 
-                # print(d)
-                so.decls['functions'].add(decl(tokens[0], d))
+                name = tokens[0]
+                arguments = tokens[5].split(':') [1]
+                return_value = tokens[2][2:].split(tokens[0]) [0]
+                d = return_value + name + arguments + ';'
+                # print(return_value, name, arguments, sep=' | ')
+                so.decls['functions'].add(decl(name, d))
         elif kind == 'v': #variable
             d = tokens[2][2:-4].split('=')
             d = d[0] if len(d) == 1 else d[0]+';'
@@ -110,7 +104,7 @@ def get_declarations(code):
             so.decls['classes'].add(decl(tokens[0], tokens[0]))
 
     # sad moramo rucno da izvucemo ostale informacije
-    for m in re.finditer(otherRegex, code):
+    for m in re.finditer(extraTagsRegex, code):
         kind = m.group(1)
         if kind == '#include':
             so.decls['include'].add( decl(m.group(2), m.group(0).strip()) )

@@ -1,6 +1,6 @@
 import clang.cindex as clg
 index = clg.Index.create()
-tu = index.parse("t1.cpp")
+tu = index.parse("test.cpp")
 
 i = 0
 def prodji(n):
@@ -24,8 +24,6 @@ def prodji(n):
 
     print("%s%s" %(i*"  ", info))
 
-    # for x in n.get_arguments():
-    #     print(x.displayname)
 
     for c in n.get_children():
         i += 1
@@ -34,6 +32,7 @@ def prodji(n):
         
 
 prodji(tu.cursor)
+
 
 
 

@@ -1,0 +1,216 @@
+\documentclass{beamer}
+
+\usetheme{CambridgeUS}
+
+\usepackage[utf8x,utf8]{inputenc} % make weird characters work
+\usepackage[serbian]{babel}
+
+\usepackage{graphicx}
+\graphicspath{{../images/}}
+
+\title{C++ Jezgro za Jupyter Notebook}
+\subtitle{Interaktivno kuckanje u jeziku C++}
+
+\author{G.~Vinterhalter \and M.~Ranković}
+
+\institute[Beogradski univerzitet] % (optional, but mostly needed)
+{
+  Matematički fakultet, Beogradski univerzitet\\
+  (Metodologija stručnog i naučnog rada)
+  }
+
+\date{Prezentacija radova, 2016}
+
+\subject{Metodologija Stručnog i Naučnog rada}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+
+% \AtBeginSubsection[]
+% {
+%   \begin{frame}<beamer>{Outline}
+%     \tableofcontents[currentsection,currentsubsection]
+%   \end{frame}
+% }
+
+% Let's get started
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% \begin{frame}{Outline}
+%   \tableofcontents
+%   % You might wish to add the option [pausesections]
+% \end{frame}
+
+% Section and subsections will appear in the presentation overview
+% and table of contents.
+\section{Jupiter Notebook}
+
+\subsection{Uvod}
+
+\begin{frame}{Šta je to Jupyter Notebook ???}
+
+  \quad Jupyter Notebook je web aplikacija za kreiranje i deljenje dokumenata
+  koji pored uobičajenog tekstualnog sadržaja sadrže i interaktivni kod. 
+  \pause
+
+
+  \begin{itemize}
+  \item {
+      Dokument se sastoji iz vertikalnih ćelija: \pause
+      \begin{itemize}
+        \item ćelije teksta (markdown + latex math)
+        \item ćelije koda  (kod koji Kernel izvršava)
+        \item sirove ćelije
+      \end{itemize}
+      \pause
+  }
+  \item {
+      Svaka ćelija se može izvršiti (osvežiti) zasebno
+      pri čemu ćelije koda imaju izlaz. 
+      \pause
+  }
+  \item {
+      Dokument se prikazuje renderuje kao html stranica. Zato izlaz može
+      da predstavlja html kod. \pause
+      \begin{itemize}
+        \item Lepo formatiran kod
+        \item slike, grafikoni (svg, png, jpg, ...)
+        \item interaktivni sadržaj (java script)
+      \end{itemize}
+
+      \pause
+  }
+  \item{
+      Ćelije podržavaju interaktivnu potržnju za korisničkim unosom.
+      \pause
+    }
+  \end{itemize}
+\end{frame}
+
+\subsection{Notebook format}
+
+\begin{frame}{Format i konverzije}
+  \begin{itemize}
+  \item {
+      Interno dokument se čuva kao ".json" fajl. (.ipynb format) \pause 
+  }
+  \item {
+      Čuvaju se i izlazi ćelija \pause 
+  }
+  \item {   
+      Dokument se može eksportovati  \pause
+      \begin{itemize}
+        \item {pdf preko latexa}
+        \item {html}
+        \item {html kao prezentacija}
+        \item {markdown}
+        \item {izvrni kod}
+      \end{itemize}
+  }
+  \end{itemize}
+\end{frame}
+
+\section {Arhitektura}
+
+\subsection {Uvod u Arhitekturu}
+
+\begin{itemize}
+  \item{ arhitektura je klijent server. }
+  \item{
+          \begin{figure}[h!]
+          \includegraphics[scale=0.5]{nbKomponente.png}
+          \end{figure}
+    }
+\end{itemize}
+
+
+
+\subsection{Another Subsection}
+
+\begin{frame}{Blocks}
+\begin{block}{Block Title}
+You can also highlight sections of your presentation in a block, with it's own title
+\end{block}
+\begin{theorem}
+There are separate environments for theorems, examples, definitions and proofs.
+\end{theorem}
+\begin{example}
+Here is an example of an example block.
+\end{example}
+\end{frame}
+
+% Placing a * after \section means it will not show in the
+% outline or table of contents.
+\section*{Summary}
+
+\begin{frame}{Summary}
+  \begin{itemize}
+  \item
+    The \alert{first main message} of your talk in one or two lines.
+  \item
+    The \alert{second main message} of your talk in one or two lines.
+  \item
+    Perhaps a \alert{third message}, but not more than that.
+  \end{itemize}
+  
+  \begin{itemize}
+  \item
+    Outlook
+    \begin{itemize}
+    \item
+      Something you haven't solved.
+    \item
+      Something else you haven't solved.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+% All of the following is optional and typically not needed. 
+\appendix
+\section<presentation>*{\appendixname}
+\subsection<presentation>*{For Further Reading}
+
+\begin{frame}[allowframebreaks]
+  \frametitle<presentation>{For Further Reading}
+    
+  \begin{thebibliography}{10}
+    
+  \beamertemplatebookbibitems
+  % Start with overview books.
+
+  \bibitem{Author1990}
+    A.~Author.
+    \newblock {\em Handbook of Everything}.
+    \newblock Some Press, 1990.
+ 
+    
+  \beamertemplatearticlebibitems
+  % Followed by interesting articles. Keep the list short. 
+
+  \bibitem{Someone2000}
+    S.~Someone.
+    \newblock On this and that.
+    \newblock {\em Journal of This and That}, 2(1):50--100,
+    2000.
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
+
+
