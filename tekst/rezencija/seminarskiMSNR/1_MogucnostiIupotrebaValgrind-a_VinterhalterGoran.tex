@@ -1,0 +1,104 @@
+% !TEX encoding = UTF-8 Unicode
+
+\documentclass[a4paper]{article}
+
+\usepackage[T2A]{fontenc} % enable Cyrillic fonts
+\usepackage[utf8x,utf8]{inputenc} % make weird characters work
+\usepackage[serbian]{babel}
+%\usepackage[english,serbianc]{babel}
+\usepackage{amssymb}
+
+\usepackage{color}
+\usepackage{url}
+\usepackage[unicode]{hyperref}
+\hypersetup{colorlinks,citecolor=green,filecolor=green,linkcolor=blue,urlcolor=blue}
+
+\newcommand{\odgovor}[1]{\textcolor{blue}{#1}}
+
+\begin{document}
+
+\title{
+  Opis procesa analize i otklanjanja grešaka
+  programske podrške primenom alata Velgrind
+\\ \small{Dragutin Ilić, Karadžić Aleksandra, šuka Aleksandar }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{Recenzija: Goran Vinterhalter}
+%ime autora recenzije neće biti predato autorima seminarskog rada
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\maketitle
+
+%Recenziju predajete u tex obliku, budite uredni!
+
+Pod komentarima su data objašnjenja za svaku navedenu stavku.
+
+\section{O čemu rad govori?}
+Rad opisuje mogućnosti i korišćenje alata Valgrind, prvenstveno 6 osnovnih alata za
+testiranje propusta u oblastima provere glavne memorije, keš iskorišćenosti
+i višenitnog programiranja.
+
+\section{Krupne primedbe i sugestije}
+Rad propušta da pomene i ostale alatae: DHAT, SGcheck, BBV. Iako su poslednja
+dva eksperimentalna trebalo bi ih navesti zbog kompletnosti.\\
+Ime softvera bi trebalo ostaviti u originalu Valgrind. Po Nordiskoj mitologiji
+Valgrind su glavna vrata ulaska u Valhalu i izgovaraju se sa 'a'.
+
+\section{Sitne primedbe}
+Pored termina "mrtva petlja" trebalo bi zbog potpunosti navesti \textit{(eng. deadloack)}
+Rad suviše pažnje posvećuje alatima za višenitno programiranje.
+
+\section{Provera sadržajnosti i forme seminarskog rada}
+
+\begin{enumerate}
+\item Da li rad dobro odgovara na zadatu temu?\\
+  Da.
+\item Da li je nešto važno propušteno?\\
+  Treba pomenuti i preostala tri alata.
+\item Da li ima suštinskih grešaka i propusta?\\
+  Ne.
+\item Da li je naslov rada dobro izabran?\\
+  Da.
+\item Da li sažetak sadrži prave podatke o radu?\\
+  Da.
+\item Da li je rad lak-težak za čitanje?\\
+  Rad je povremeno suviše detaljan.
+\item Da li je za razumevanje teksta potrebno predznanje i u kolikoj meri?\\
+  Potrebno je osnovno poznavanje: programiranja, arhitekture i organizacije računara kao i problema višenitnog programiranja.
+\item Da li je u radu navedena odgovarajuća literatura?\\
+  Da.
+\item Da li su u radu reference korektno navedene?\\
+  Da.
+\item Da li je struktura rada adekvatna?\\
+  Da.
+\item Da li rad sadrži sve elemente propisane uslovom seminarskog rada (slike, tabele, broj strana...)?\\
+  Da.
+\item Da li su slike i tabele funkcionalne i adekvatne?\\
+  Slike su veoma loše rezolucije. Autor se savetuje da sve slike sa plavom
+  pozadinom zameni sa tekstom.
+\end{enumerate}
+
+\section{Ocenite sebe}
+% Napišite koliko ste upućeni u oblast koju recenzirate: 
+% a) ekspert u datoj oblasti
+% b) veoma upućeni u oblast
+% c) srednje upućeni
+% d) malo upućeni 
+e) skoro neupućeni
+% f) potpuno neupućeni
+% Obrazložite svoju odluku
+Nisam se nikad susreo sa alatima ovog tipa.
+Poznata mi je problematika kojom se bavi ali ništa dalje.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Poverljivi komentari}
+% Poverljivi komentari neće biti prosleđeni autorima seminarskog rada.
+% Ukoliko nemate poverljivih komentara, ovaj deo može da ostane prazan.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
+
+
