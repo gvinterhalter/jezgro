@@ -3,6 +3,7 @@
 
 #include "transunit.h"
 #include <string>
+#include <iostream>
 #include <clang-c/Index.h>
 
 

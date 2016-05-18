@@ -16,14 +16,13 @@ enum CXChildVisitResult traverse_func(CXCursor cursor, CXCursor parent, CXClient
     typekind_spelling = clang_getTypeKindSpelling(cursor_type.kind);
 
 
-    printf("%s\n",clang_getCString(kind_spelling));
-
-    if(strcmp("", clang_getCString(type_spelling)))
+    std::cout << clang_getCString(kind_spelling) << std::endl;
+    if(clang_getCString(type_spelling) != 0)
     {
-        printf("|| %s\n",clang_getCString(type_spelling));
-        printf("|| %s\n",clang_getCString(typekind_spelling));
+        std::cout << clang_getCString(type_spelling) << std::endl;
+        std::cout << clang_getCString(typekind_spelling) << std::endl;
     }
-    printf("\n");
+    std::cout << std::endl;
 
     clang_disposeString(kind_spelling);
     clang_disposeString(type_spelling);
