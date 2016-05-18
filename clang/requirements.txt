@@ -1,0 +1,4 @@
+Requirements for building:
+
+# sudo apt-get install libclang-3.8* libclang-common-3.8*
+# sudo apt-get install libclang-3.8* libclang1-3.8*
