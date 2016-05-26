@@ -19,6 +19,7 @@ struct Symbol
 struct Context
 {
   std::string name;
+  unsigned version;
   CXCursor callerCursor;
 };
 
@@ -27,7 +28,7 @@ CXCursor rootCursor;
 CXTranslationUnit tu = 0;
 CXFile file = 0;
 
-void changeRefName(CXCursor cursor, std::string name)
+void changeRefName(CXCursor cursor, std::string name, unsigned version)
 {
   CXFile file;
   CXSourceLocation location = clang_getCursorLocation(cursor);
@@ -41,8 +42,9 @@ void changeRefName(CXCursor cursor, std::string name)
   }
   else
   {
-    std::cout << "\tApplying change to: " << name << " at line " << line << " : " << column << std::endl;
-    std::cout << "\t"<< offset << " in buffer" << std::endl;
+    std::cout << "\tApplying change to: " << name << "__" << version
+              << " at line " << line << " : " << column << std::endl
+              << "\tOffset: "<< offset << " in buffer" << std::endl;
   }
 }
 
@@ -53,7 +55,7 @@ enum CXVisitorResult   visitReference (void *context, CXCursor cursor, CXSourceR
 
   if (clang_equalCursors(passedContext.callerCursor, refCursor))
   {
-      changeRefName(cursor, passedContext.name);
+      changeRefName(cursor, passedContext.name, passedContext.version);
   }
   else
   {
@@ -82,8 +84,12 @@ unsigned int varDecl(CXCursor cursor){
     result.version ++;
     symbolMap.erase(it);
     context.callerCursor = cursor;
-    context.name = spelling + "__" + std::to_string(result.version);
+    context.name = spelling;
+    context.version = result.version;
+
+
     symbolMap.insert(std::pair<std::string, Symbol>(spelling, {spelling, typeName, result.version}));
+    symbolMap.erase(it);
 
     clang_findReferencesInFile(cursor, file, {(void*) &context, visitReference});
   }
@@ -114,8 +120,11 @@ unsigned int fnDecl(CXCursor cursor)
     result.version ++;
     symbolMap.erase(it);
     context.callerCursor = cursor;
-    context.name = spelling + "__" + std::to_string(result.version);
+    context.name = spelling;
+    context.version = result.version;
+
     symbolMap.insert(std::pair<std::string, Symbol>(spelling, {spelling, typeName, result.version}));
+    symbolMap.erase(it);
 
     clang_findReferencesInFile(cursor, file, {(void*) &context, visitReference});
   }
