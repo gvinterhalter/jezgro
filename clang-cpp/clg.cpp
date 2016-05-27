@@ -146,23 +146,27 @@ unsigned int varDecl(CXCursor cursor)
     context.callerCursor = cursor;
     context.name = spelling;
     context.version = 0;
+    clang_findReferencesInFile(cursor, file, {(void*) &context, visitReference});
   }
   else
   {
     std::pair <std::string, Symbol> resultPair = *it;
     Symbol result = resultPair.second;
 
-    result.version ++;
+    if (!typeName.compare(result.type)){
+      result.version ++;
 
-    context.callerCursor = cursor;
-    context.name = spelling;
-    context.version = result.version;
+      context.callerCursor = cursor;
+      context.name = spelling;
+      context.version = result.version;
 
-    symbolMap.insert(std::pair<std::string, Symbol>(spelling, {spelling, typeName, result.version}));
-    symbolMap.erase(it);
+      symbolMap.insert(std::pair<std::string, Symbol>(spelling, {spelling, typeName, result.version}));
+      symbolMap.erase(it);
+
+      clang_findReferencesInFile(cursor, file, {(void*) &context, visitReference});
+    }
   }
 
-  clang_findReferencesInFile(cursor, file, {(void*) &context, visitReference});
 
   return 0;
 }
@@ -215,8 +219,8 @@ enum CXChildVisitResult mainVisitor( CXCursor cursor, CXCursor parent, CXClientD
     // obradjujemo deklaracije variabli i funkcija
     if (kind == CXCursor_VarDecl)
       varDecl (cursor);
-    else if (kind == CXCursor_FunctionDecl)
-      fnDecl (cursor);
+    //else if (kind == CXCursor_FunctionDecl)
+      //fnDecl (cursor);
   }
   else
     printCursorInfo(cursor, false);
@@ -230,8 +234,7 @@ int main( int argc, char** argv )
   if( argc < 2 )
     return -1;
 
-
-  CXIndex index = clang_createIndex( 1, 0 );
+  CXIndex index = clang_createIndex( 0, 0 );
   tu = clang_parseTranslationUnit( index, argv[1], NULL, 0, NULL, 0, 0);
 
   if( !tu )
@@ -248,6 +251,8 @@ int main( int argc, char** argv )
   std::sort(insertionList.begin(), insertionList.end(), compare);
 
   makeChangesToFile(argv[1]);
+
+  insertionList.clear();
 
   clang_disposeTranslationUnit( tu );
   clang_disposeIndex( index );
